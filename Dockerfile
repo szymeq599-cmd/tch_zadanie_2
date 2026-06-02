@@ -25,6 +25,9 @@ RUN --mount=type=secret,id=buildinfo \
 # ---------------------- ETAP 2:  
 FROM node:20-bookworm-slim
 
+# Aktualizacja systemu i usunięcie niepotrzebnych plików
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Kopiujemy zainstalowane moduły i kod z etapu budowania
