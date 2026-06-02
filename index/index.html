@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Pogodynka</title>
+</head>
+<body>
+    <h1>Sprawdź pogodę</h1>
+
+    <div class="form-group">
+        <label for="countrySelect">Wybierz kraj:</label><br>
+        <select id="countrySelect" onchange="updateCities()"> <!-- Wyswietlanie miast na podstawie wybranego kraju -->
+            <option value="">-- Wybierz kraj --</option>
+            <option value="Polska">Polska</option>
+            <option value="Hiszpania">Hiszpania</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="citySelect">Wybierz miasto:</label><br>
+        <select id="citySelect" disabled>
+            <option value="">-- Najpierw wybierz kraj --</option>
+        </select>
+    </div>
+
+    <button onclick="checkWeather()">Pobierz pogodę</button>
+
+    <div id="result"></div>
+
+    <script>
+
+        const countrySelect = document.getElementById('countrySelect');
+        const citySelect = document.getElementById('citySelect');
+
+        function updateCities() {
+            const countrySelect = document.getElementById('countrySelect');
+            const citySelect = document.getElementById('citySelect');
+            const selectedCountry = countrySelect.value;
+
+            citySelect.innerHTML = '<option value="">-- Wybierz miasto --</option>';
+            
+            let cities = [];
+
+            switch (selectedCountry) {
+                case "Polska":
+                    cities = ["Warszawa", "Kraków", "Lublin"];
+                    break;
+                case "Hiszpania":
+                    cities = ["Madryt", "Barcelona", "Sewilla"];
+                    break;
+                default:
+                    cities = []; 
+            }
+
+            if (cities.length > 0) {
+                citySelect.disabled = false;
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    citySelect.appendChild(option);
+                });
+            } else {
+                citySelect.disabled = true;
+            }
+        }
+
+        async function checkWeather() {
+            const city = citySelect.value;
+            const resultDiv = document.getElementById('result');
+
+            if (city == null || city === "") {
+                alert("Wybierz miasto!");
+                return;
+            }
+
+            // Pobieranie danych o pogodzie 
+            try {
+                const response = await fetch('/get-weather', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ city })
+                });
+
+                const weather = await response.json();
+
+                if (response.ok) {
+                    //Wyświetlenie danych 
+                    resultDiv.innerHTML = `
+                        <h2>Pogoda w: ${weather.name}</h2>
+                        <p><strong>Temperatura:</strong> ${weather.main.temp} °C</p>
+                        <p><strong>Odczuwalna:</strong> ${weather.main.feels_like} °C</p>
+                    `;
+                } else {
+                    throw new Error();
+                }
+            } catch (err) {
+                resultDiv.innerHTML = "Nie udało się pobrać danych pogodowych.";
+            }
+        }
+    </script>
+</body>
+</html>
