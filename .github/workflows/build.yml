@@ -42,6 +42,8 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:latest
           cache-from: type=registry,ref=szymondobrasiewicz/zadanie_2:buildcache
           cache-to: type=registry,ref=szymondobrasiewicz/zadanie_2:buildcache,mode=max
+          secrets: |
+            DOCKERHUB_INFO=${{ secrets.DOCKERHUB_INFO }}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
