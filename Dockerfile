@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 # ---------------------- ETAP 1:  
-FROM node:18-bookworm-slim AS builder
+FROM node:20-bookworm-slim AS builder
 
 # Informacja o autorze zgodna ze standardem OCI
 LABEL org.opencontainers.image.authors="Szymon Dobrasiewicz"
@@ -23,7 +23,7 @@ RUN --mount=type=secret,id=buildinfo \
     cat /run/secrets/buildinfo > /tmp/buildinfo.txt
 
 # ---------------------- ETAP 2:  
-FROM node:18-bookworm-slim
+FROM node:20-bookworm-slim
 
 WORKDIR /app
 
